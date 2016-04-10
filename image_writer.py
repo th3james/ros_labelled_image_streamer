@@ -6,18 +6,14 @@ __version__=  '0.1'
 import sys, time
 
 import numpy as np
-from scipy.ndimage import filters
 
 import cv2
-import cv_bridge
+from cv_bridge import CvBridge
 
 import roslib
 import rospy
 
-
 from sensor_msgs.msg import Image
-
-
 
 VERBOSE=True
 INPUT_TOPIC="/camera/rgb/image_raw/"
@@ -40,12 +36,10 @@ class image_feature:
         if VERBOSE :
             print 'received image of size: {0}*{1}'.format(ros_data.height, ros_data.width)
         
-        ros_data
-        np_arr = np_arr.reshape(ros_data.width,ros_data.height,3)
-        image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        import pdb; pdb.set_trace()
-        cv2.imwrite(OUTPUT_DIR + 'hat.jpg', image_np)
-        quit()
+        cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
+        with open(OUTPUT_DIR + 'hat.jpg') as file:
+          cv2.imwrite(file.name, cv_image)
+        exit()
 
 
 def main(args):
