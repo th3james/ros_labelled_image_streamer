@@ -21,36 +21,34 @@ OUTPUT_DIR="/media/sdmount/sdcard/images/"
 
 class image_feature:
 
-    def __init__(self):
-        '''Initialize ros publisher, ros subscriber'''
-        
-        self.subscriber = rospy.Subscriber(INPUT_TOPIC,
-            Image, self.callback,  queue_size = 1)
-        if VERBOSE :
-            print "subscribed to {0}".format(INPUT_TOPIC)
+  def __init__(self):
+    rospy.init_node('image_feature')
+      
+    self.subscriber = rospy.Subscriber(INPUT_TOPIC,
+        Image, self.callback,  queue_size = 1)
+    
+    self.last = rospy.Time.now()
 
+  def callback(self, ros_data):
+    '''Callback function of subscribed topic.
+    Streams images to disk when button is depressed'''
+    if rospy.Time.now() > self.last + rospy.Duration(1.0):
+      self.last = rospy.Time.now()
 
-    def callback(self, ros_data):
-        '''Callback function of subscribed topic. 
-        Here images get converted and features detected'''
-        if VERBOSE :
-            print 'received image of size: {0}*{1}'.format(ros_data.height, ros_data.width)
-        
-        cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
-        with open(OUTPUT_DIR + 'hat.jpg') as file:
+      if VERBOSE :
+        print 'received image of size: {0}*{1}'.format(ros_data.height, ros_data.width)
+
+      cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
+      with open(OUTPUT_DIR + 'hat.jpg') as file:
           cv2.imwrite(file.name, cv_image)
-        exit()
-
 
 def main(args):
-    '''Initializes and cleanup ros node'''
-    ic = image_feature()
-    rospy.init_node('image_feature', anonymous=True)
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print "Shutting down ROS Image feature detector module"
-    cv2.destroyAllWindows()
+  '''Initializes and cleanup ros node'''
+  ic = image_feature()
+  try:
+    rospy.spin()
+  except KeyboardInterrupt:
+    print "Shutting down ROS Image feature detector module"
 
 if __name__ == '__main__':
     main(sys.argv)
