@@ -39,7 +39,7 @@ class image_feature:
         print 'received image of size: {0}*{1}'.format(ros_data.height, ros_data.width)
 
       cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
-      with open(OUTPUT_DIR + 'hat.jpg') as file:
+      with open(OUTPUT_DIR + str(self.last.secs) + '.jpg', 'w+') as file:
           cv2.imwrite(file.name, cv_image)
 
 def main(args):
