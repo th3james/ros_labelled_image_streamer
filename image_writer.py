@@ -33,11 +33,32 @@ class ParseCommands:
   def get_current_command(cls):
     return cls.KEY_MAPPINGS.get(readchar.readkey(), None)
 
-class image_feature:
-
+class TurtlebotMover:
   def __init__(self):
-    rospy.init_node('image_feature')
-      
+    self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=1)
+    
+    rospy.on_shutdown(self.shutdown)
+  
+  def go_forward(self):
+    move_cmd = Twist()
+    move_cmd.linear.x = 0.2 # 0.2 m/s
+    move_cmd.angular.z = 0 # 0 radians/s
+
+    self.cmd_vel.publish(move_cmd)
+
+  def shutdown(self):
+    # stop turtlebot
+    rospy.loginfo("Stop TurtleBot")
+    # a default Twist has linear.x of 0 and angular.z of 0.  So it'll stop TurtleBot
+    self.cmd_vel.publish(Twist())
+    # sleep just makes sure TurtleBot receives the stop command prior to shutting down the script
+    rospy.sleep(1)
+
+class ImageTraining:
+
+  def __init__(self, turtlebot_mover):
+    self.turtlebot_mover = turtlebot_mover
+
     self.subscriber = rospy.Subscriber(INPUT_TOPIC,
         Image, self.callback,  queue_size = 1)
     
@@ -52,7 +73,7 @@ class image_feature:
       command = ParseCommands.get_current_command()
 
       if command is not None:
-        if VERBOSE :
+        if VERBOSE:
           print 'received {0}*{1} image and command {2}'.format(ros_data.height, ros_data.width, command)
 
         cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
@@ -60,9 +81,13 @@ class image_feature:
         with open(filename, 'w+') as file:
             cv2.imwrite(file.name, cv_image)
 
+        self.turtlebot_mover.go_forward()
+
 def main(args):
   '''Initializes and cleanup ros node'''
-  ic = image_feature()
+  rospy.init_node('image_trainer')
+  turtlebot_mover = TurtlebotMover()
+  image_training = ImageTraining(turtlebot_mover)
   try:
     rospy.spin()
   except KeyboardInterrupt:
