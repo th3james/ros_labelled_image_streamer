@@ -90,9 +90,6 @@ class ImageTraining:
       command = ParseCommands.get_current_command()
 
       if command is not None:
-        if VERBOSE:
-          print 'received {0}*{1} image and command {2}'.format(ros_data.height, ros_data.width, command)
-
         cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
         filename = '{0}/{1}-{2}.jpg'.format(OUTPUT_DIR, command, str(self.last.secs))
   
