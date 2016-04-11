@@ -33,43 +33,32 @@ class ParseCommands:
   def get_current_command(cls):
     return cls.KEY_MAPPINGS.get(readchar.readkey(), None)
 
+from collections import namedtuple
+BotMove = namedtuple("BotMove", "forward turn")
+
 class TurtlebotMover:
+  COMMAND_MAPPER = {
+    "Forward": BotMove(forward = 0.1, turn = 0.0),
+    "Left": BotMove(forward = 0.0, turn = 1),
+    "Right": BotMove(forward = 0.0, turn = -1),
+  }
+
   def __init__(self):
     self.cmd_vel = rospy.Publisher('cmd_vel_mux/input/navi', Twist, queue_size=1)
     
     rospy.on_shutdown(self.shutdown)
   
-  def go_forward(self):
+  @staticmethod
+  def build_twist_move(bot_move):
     move_cmd = Twist()
-    move_cmd.linear.x = 0.2 # 0.2 m/s
-    move_cmd.angular.z = 0 # 0 radians/s
-
-    self.cmd_vel.publish(move_cmd)
-  
-  def turn_left(self):
-    move_cmd = Twist()
-    move_cmd.linear.x = 0
-    move_cmd.angular.z = 2
-    
-    self.cmd_vel.publish(move_cmd)
-  
-  def turn_right(self):
-    move_cmd = Twist()
-    move_cmd.linear.x = 0
-    move_cmd.angular.z = -2
-    
-    self.cmd_vel.publish(move_cmd)
+    move_cmd.linear.x = bot_move.forward
+    move_cmd.angular.z = bot_move.turn
+    return move_cmd
   
   def perform_command(self, command):
-    COMMAND_MAPPER = {
-      "Forward": 'go_forward',
-      "Left": 'turn_left',
-      "Right": 'turn_right',
-    }
-    action = COMMAND_MAPPER.get(command, None)
-    if command is not None:
-      getattr(self, action)()
-
+    bot_move = self.COMMAND_MAPPER.get(command, None)
+    if bot_move is not None:
+      self.cmd_vel.publish(TurtlebotMover.build_twist_move(bot_move))
 
   def shutdown(self):
     # stop turtlebot
