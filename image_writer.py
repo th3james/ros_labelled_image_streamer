@@ -22,14 +22,16 @@ INPUT_TOPIC="/camera/rgb/image_raw/"
 OUTPUT_DIR="/media/sdmount/sdcard/images/"
 SECONDS_BETWEEN_IMAGES=1.0
 
-KEY_MAPPINGS = {
-  'w': "Forward",
-  'a': "Left",
-  'd': "Right",
-}
+class ParseCommands:
+  KEY_MAPPINGS = {
+    'w': "Forward",
+    'a': "Left",
+    'd': "Right",
+  }
 
-def get_current_command():
-  return KEY_MAPPINGS.get(readchar.readkey(), None)
+  @classmethod
+  def get_current_command(cls):
+    return cls.KEY_MAPPINGS.get(readchar.readkey(), None)
 
 class image_feature:
 
@@ -47,14 +49,14 @@ class image_feature:
     if rospy.Time.now() > self.last + rospy.Duration(SECONDS_BETWEEN_IMAGES):
       self.last = rospy.Time.now()
       
-      command = get_current_command()
+      command = ParseCommands.get_current_command()
 
       if command is not None:
         if VERBOSE :
-          print 'received image of size: {0}*{1}'.format(ros_data.height, ros_data.width)
+          print 'received {0}*{1} image and command {2}'.format(ros_data.height, ros_data.width, command)
 
         cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
-        filename = OUTPUT_DIR + command + str(self.last.secs) + '.jpg'
+        filename = '{0}/{1}-{2}.jpg'.format(OUTPUT_DIR, command, str(self.last.secs))
         with open(filename, 'w+') as file:
             cv2.imwrite(file.name, cv_image)
 
