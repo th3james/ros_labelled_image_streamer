@@ -86,7 +86,7 @@ class ImageTraining:
     if rospy.Time.now() > self.last + rospy.Duration(SECONDS_BETWEEN_IMAGES):
       self.last = rospy.Time.now()
       if VERBOSE:
-        print "processing time: " + str(self.last.secs) + " seq: " + str(ros_data.header.seq)
+        print "Got image at time: " + str(self.last.secs) + " seq: " + str(ros_data.header.seq)
       command = ParseCommands.get_current_command()
 
       if command is not None:
@@ -97,7 +97,7 @@ class ImageTraining:
         filename = '{0}/{1}-{2}.jpg'.format(OUTPUT_DIR, command, str(self.last.secs))
   
         if VERBOSE:
-          print "writing {0} for time: {1}, seq: {2}".format(command, str(self.last.secs), ros_data.header.seq)
+          print "## Writing {0} for time: {1}, seq: {2}".format(command, str(self.last.secs), ros_data.header.seq)
         with open(filename, 'w+') as file:
           cv2.imwrite(file.name, cv_image)
 
