@@ -20,7 +20,8 @@ from sensor_msgs.msg import Image
 VERBOSE=True
 INPUT_TOPIC="/camera/rgb/image_raw/"
 OUTPUT_DIR="/media/sdmount/sdcard/images/"
-SECONDS_BETWEEN_IMAGES=1.0
+SECONDS_BETWEEN_IMAGES=0.5
+
 
 class ParseCommands:
   KEY_MAPPINGS = {
@@ -39,8 +40,8 @@ BotMove = namedtuple("BotMove", "forward turn")
 class TurtlebotMover:
   COMMAND_MAPPER = {
     "Forward": BotMove(forward = 0.1, turn = 0.0),
-    "Left": BotMove(forward = 0.0, turn = 1),
-    "Right": BotMove(forward = 0.0, turn = -1),
+    "Left": BotMove(forward = 0.0, turn = 0.5),
+    "Right": BotMove(forward = 0.0, turn = -0.5),
   }
 
   def __init__(self):
@@ -81,6 +82,7 @@ class ImageTraining:
   def callback(self, ros_data):
     '''Callback function of subscribed topic.
     Streams images to disk when button is depressed'''
+    
     if rospy.Time.now() > self.last + rospy.Duration(SECONDS_BETWEEN_IMAGES):
       self.last = rospy.Time.now()
       
