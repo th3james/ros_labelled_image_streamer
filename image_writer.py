@@ -45,6 +45,31 @@ class TurtlebotMover:
     move_cmd.angular.z = 0 # 0 radians/s
 
     self.cmd_vel.publish(move_cmd)
+  
+  def turn_left(self):
+    move_cmd = Twist()
+    move_cmd.linear.x = 0
+    move_cmd.angular.z = 2
+    
+    self.cmd_vel.publish(move_cmd)
+  
+  def turn_right(self):
+    move_cmd = Twist()
+    move_cmd.linear.x = 0
+    move_cmd.angular.z = -2
+    
+    self.cmd_vel.publish(move_cmd)
+  
+  def perform_command(self, command):
+    COMMAND_MAPPER = {
+      "Forward": 'go_forward',
+      "Left": 'turn_left',
+      "Right": 'turn_right',
+    }
+    action = COMMAND_MAPPER.get(command, None)
+    if command is not None:
+      getattr(self, action)()
+
 
   def shutdown(self):
     # stop turtlebot
@@ -79,9 +104,9 @@ class ImageTraining:
         cv_image = CvBridge().imgmsg_to_cv2(ros_data, desired_encoding="passthrough")
         filename = '{0}/{1}-{2}.jpg'.format(OUTPUT_DIR, command, str(self.last.secs))
         with open(filename, 'w+') as file:
-            cv2.imwrite(file.name, cv_image)
+          cv2.imwrite(file.name, cv_image)
 
-        self.turtlebot_mover.go_forward()
+        self.turtlebot_mover.perform_command(command)
 
 def main(args):
   '''Initializes and cleanup ros node'''
