@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 import training_data
+import cv2
 
 IMAGE_POINTS = 921600
 OUTPUT_CLASSES = 3
@@ -28,4 +29,9 @@ with tf.Session() as sess:
 
   print(sess.run(accuracy, feed_dict={x: data['test'][0], y_: data['test'][1]}))
 
+  weights = sess.run(tf.transpose(W))
 
+  for weight in weights:
+    img = weight.reshape(480, 640, 3)
+    cv2.imshow('image',img)
+    cv2.waitKey(0)
