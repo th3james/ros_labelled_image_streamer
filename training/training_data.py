@@ -6,27 +6,31 @@ import numpy as np
 TRAINING_DATA_PATH = "/Users/th3james/src/curricular/ros_labelled_image_streamer/training/training-data/"
 IMAGE_POINTS = 921600
 OUTPUT_CLASSES = 3
-RECORDS_TO_LOAD = 550
+IMAGE_DIMENSIONS = [480, 640, 3]
 
-def load_data():
-  print(TRAINING_DATA_PATH + '*jpg')
+def load_data(amount):
   image_names = glob.glob(TRAINING_DATA_PATH + '*jpg')
   random.shuffle(image_names)
   
   images_data = np.zeros(
-    (RECORDS_TO_LOAD, IMAGE_POINTS), dtype=np.uint8
+    (amount, IMAGE_POINTS), dtype=np.uint8
   )
   labels = np.zeros(
-    (RECORDS_TO_LOAD, OUTPUT_CLASSES), dtype=np.uint8
+    (amount, OUTPUT_CLASSES), dtype=np.uint8
   )
 
-  for i in range(0, RECORDS_TO_LOAD):
+  for i in range(0, amount):
     images_data[i] = load_image(image_names[i])
     labels[i] = extract_label(image_names[i])
 
+  return (images_data, labels)
+
+def load_training_sets(amount):
+  images_data, labels = load_data(amount)
+
   ranges = {
-    'train': range(0, int(RECORDS_TO_LOAD*0.6)),
-    'test': range(int(RECORDS_TO_LOAD*0.6), RECORDS_TO_LOAD),
+    'train': range(0, int(amount*0.6)),
+    'test': range(int(amount*0.6), amount),
   }
 
   f = lambda r: [images_data[r], labels[r]]

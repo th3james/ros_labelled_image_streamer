@@ -1,23 +1,21 @@
 import tensorflow as tf
-
-import training_data
 import cv2
 
-IMAGE_POINTS = 921600
-OUTPUT_CLASSES = 3
+import training_data
 
+RECORDS_TO_TRAIN_ON = 550
 
-x = tf.placeholder(tf.float32, [None, IMAGE_POINTS])
-W = tf.Variable(tf.zeros([IMAGE_POINTS, OUTPUT_CLASSES]))
-b = tf.Variable(tf.zeros([OUTPUT_CLASSES]))
+x = tf.placeholder(tf.float32, [None, training_data.IMAGE_POINTS])
+W = tf.Variable(tf.zeros([training_data.IMAGE_POINTS, training_data.OUTPUT_CLASSES]))
+b = tf.Variable(tf.zeros([training_data.OUTPUT_CLASSES]))
 y = tf.nn.softmax(tf.matmul(x, W) + b)
 
-y_ = tf.placeholder(tf.float32, [None, OUTPUT_CLASSES])
+y_ = tf.placeholder(tf.float32, [None, training_data.OUTPUT_CLASSES])
 cross_entropy = -tf.reduce_sum(y_*tf.log(y))
 train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
 init = tf.initialize_all_variables()
-data = training_data.load_data()
+data = training_data.load_training_sets(RECORDS_TO_TRAIN_ON)
 
 with tf.Session() as sess:
   sess.run(init)
@@ -32,6 +30,6 @@ with tf.Session() as sess:
   weights = sess.run(tf.transpose(W))
 
   for weight in weights:
-    img = weight.reshape(480, 640, 3)
+    img = weight.reshape(training_data.IMAGE_DIMENSIONS)
     cv2.imshow('image',img)
     cv2.waitKey(0)
