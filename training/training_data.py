@@ -6,7 +6,7 @@ import numpy as np
 TRAINING_DATA_PATH = "/Users/th3james/src/curricular/ros_labelled_image_streamer/training/training-data/"
 IMAGE_POINTS = 921600
 OUTPUT_CLASSES = 3
-RECORDS_TO_LOAD = 10
+RECORDS_TO_LOAD = 500
 
 def load_data():
   print(TRAINING_DATA_PATH + '*jpg')
