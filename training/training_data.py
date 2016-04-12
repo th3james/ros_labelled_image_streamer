@@ -20,15 +20,17 @@ def load_data():
     (RECORDS_TO_LOAD, OUTPUT_CLASSES), dtype=np.uint8
   )
 
-  for i in range(0, 10):
+  for i in range(0, RECORDS_TO_LOAD):
     images_data[i] = load_image(image_names[i])
     labels[i] = extract_label(image_names[i])
 
-  return {
-    'train': [images_data[0:6], labels[0:6]],
-    'cross': [images_data[6:8], labels[6:8]],
-    'test': [images_data[8:10], labels[8:10]],
+  ranges = {
+    'train': range(0, int(RECORDS_TO_LOAD*0.6)),
+    'test': range(int(RECORDS_TO_LOAD*0.6), RECORDS_TO_LOAD),
   }
+
+  f = lambda r: [images_data[r], labels[r]]
+  return {k: f(v) for k, v in ranges.iteritems()}
 
 def load_image(path):
   img = cv2.imread(path)
