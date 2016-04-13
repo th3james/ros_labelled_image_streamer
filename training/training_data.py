@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 
-TRAINING_DATA_PATH = "/Users/th3james/src/curricular/ros_labelled_image_streamer/training/training-data/"
+TRAINING_DATA_PATH = "/Users/th3james/src/curricular/ros_labelled_image_streamer/training/training-data/full/"
 IMAGE_POINTS = 921600
 OUTPUT_CLASSES = 3
 IMAGE_DIMENSIONS = [480, 640, 3]
