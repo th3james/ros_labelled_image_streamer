@@ -14,7 +14,7 @@ RECT_SIZE = {
   'y-step': 40,
 }
 
-data = training_data.load_data(1)
+data = training_data.load_data(200)
 
 y_steps = range(
   0, training_data.IMAGE_DIMENSIONS[0], RECT_SIZE['y-step']

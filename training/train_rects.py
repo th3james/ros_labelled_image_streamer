@@ -1,9 +1,9 @@
 import tensorflow as tf
 import cv2
 
-import training_data
+import rect_training_data as training_data
 
-RECORDS_TO_TRAIN_ON = 550
+RECORDS_TO_TRAIN_ON = 15
 
 x = tf.placeholder(tf.float32, [None, training_data.IMAGE_POINTS])
 W = tf.Variable(tf.zeros([training_data.IMAGE_POINTS, training_data.OUTPUT_CLASSES]))
