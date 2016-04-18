@@ -3,7 +3,7 @@ import cv2
 
 import rect_training_data as training_data
 
-RECORDS_TO_TRAIN_ON = 15
+RECORDS_TO_TRAIN_ON = 450
 
 x = tf.placeholder(tf.float32, [None, training_data.IMAGE_POINTS])
 W = tf.Variable(tf.zeros([training_data.IMAGE_POINTS, training_data.OUTPUT_CLASSES]))
@@ -19,13 +19,21 @@ data = training_data.load_training_sets(RECORDS_TO_TRAIN_ON)
 
 with tf.Session() as sess:
   sess.run(init)
-  batch_xs, batch_ys = data['train']
-  sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-  correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-  accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+  xs, ys = data['train']
+  batchSize = 50
+  for i in xrange(0, len(xs), batchSize):
+    batch_xs = xs[i:i+batchSize]
+    batch_ys = ys[i:i+batchSize]
 
-  print(sess.run(accuracy, feed_dict={x: data['test'][0], y_: data['test'][1]}))
+    print "train {0}-{1}".format(i, i+batchSize)
+
+    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+    correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+    print(sess.run(accuracy, feed_dict={x: data['test'][0], y_: data['test'][1]}))
 
   weights = sess.run(tf.transpose(W))
 
