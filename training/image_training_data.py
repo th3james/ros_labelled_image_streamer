@@ -30,7 +30,7 @@ def load_training_sets(amount):
 
   ranges = {
     'train': range(0, int(amount*0.6)),
-    'test': range(int(amount*0.6), amount),
+    'test': range(int(amount*0.4), amount),
   }
 
   f = lambda r: [images_data[r], labels[r]]
