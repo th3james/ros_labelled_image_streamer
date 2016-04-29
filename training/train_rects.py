@@ -54,17 +54,14 @@ y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
 cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * y_conv))
 optimiser = tf.train.AdamOptimizer(1e-4)
-#train_step = optimiser.minimize(cross_entropy)
-gradients = optimiser.compute_gradients(cross_entropy)
-apply_gradients = optimiser.apply_gradients(gradients)
+train_step = optimiser.minimize(cross_entropy)
+#gradients = optimiser.compute_gradients(cross_entropy)
+#apply_gradients = optimiser.apply_gradients(gradients)
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 with tf.Session() as sess:
   sess.run(tf.initialize_all_variables())
-
-  correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
-  accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
   xs, ys = data['train']
   batchSize = 100
@@ -75,20 +72,20 @@ with tf.Session() as sess:
 
     print "train {0}-{1}".format(i, i+batchSize)
 
-    #sess.run(train_step, feed_dict={
-    #  x: batch_xs, y_: batch_ys, keep_prob: 0.5})
-
-    print("Cross entropy:")
-    print(sess.run(cross_entropy, feed_dict={
-      x: batch_xs, y_: batch_ys, keep_prob: 0.5}))
-
-    print("First Gradient")
-    print(sess.run(gradients[0], feed_dict={
-      x: batch_xs, y_: batch_ys, keep_prob: 0.5})[0][0][0][0])
-
-    print("Appling gradients")
-    sess.run(apply_gradients, feed_dict={
+    sess.run(train_step, feed_dict={
       x: batch_xs, y_: batch_ys, keep_prob: 0.5})
+
+    #print("Cross entropy:")
+    #print(sess.run(cross_entropy, feed_dict={
+    #  x: batch_xs, y_: batch_ys, keep_prob: 0.5}))
+
+    #print("First Gradient")
+    #print(sess.run(gradients[0], feed_dict={
+    #  x: batch_xs, y_: batch_ys, keep_prob: 0.5})[0][0][0][0])
+
+    #print("Appling gradients")
+    #sess.run(apply_gradients, feed_dict={
+    #  x: batch_xs, y_: batch_ys, keep_prob: 0.5})
 
     print("Simple accuracy:")
     print(sess.run(accuracy, feed_dict={
