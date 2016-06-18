@@ -18,13 +18,13 @@ model.add(Convolution2D(10, 3, 3, border_mode='same', input_shape=training_data.
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
-model.add(Convolution2D(5, 3, 3, border_mode='same'))
+model.add(Convolution2D(3, 3, 3, border_mode='same'))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
 model.add(Flatten())
-model.add(Dense(output_dim=1024))
-model.add(Activation("relu"))
+#model.add(Dense(output_dim=1024))
+#model.add(Activation("relu"))
 
 model.add(Dense(output_dim=100))
 model.add(Activation("relu"))
