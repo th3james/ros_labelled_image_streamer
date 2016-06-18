@@ -7,14 +7,14 @@ import cv2
 
 import rect_training_data as training_data
 
-RECORDS_TO_TRAIN_ON = 900
-batchSize = 50
+RECORDS_TO_TRAIN_ON = 1000
+batchSize = 40
 
 data = training_data.load_training_sets(RECORDS_TO_TRAIN_ON)
 
 model = Sequential()
 
-model.add(Convolution2D(10, 5, 5, border_mode='same', input_shape=(40, 80, 3), bias=True))
+model.add(Convolution2D(10, 5, 5, border_mode='same', input_shape=training_data.IMAGE_DIMENSIONS, bias=True))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
 
@@ -27,11 +27,18 @@ model.add(Dropout(0.9))
 model.add(Dense(output_dim=2, bias=True))
 model.add(Activation("softmax"))
 
-optimiser = Adam(lr=0.001)
+optimiser = Adam(lr=0.0001)
 model.compile(loss='categorical_crossentropy', optimizer=optimiser, metrics=['accuracy'])
 
 # Do a training
 xs, ys = data['train']
+test_x, test_y = data['test']
+
+#for i in xrange(0, 4):
+#    print "image is: {}".format(test_y[i])
+#    img = test_x[i].reshape(training_data.IMAGE_DIMENSIONS)
+#    cv2.imshow('image',img)
+#    cv2.waitKey(0)
 
 def reshape_x(x, img_dimensions):
   return x.reshape([x.shape[0]]+img_dimensions)
@@ -45,6 +52,5 @@ for i in xrange(0, len(xs), batchSize):
 
   model.train_on_batch(reshape_x(batch_xs, training_data.IMAGE_DIMENSIONS), batch_ys)
 
-test_x, test_y = data['test']
-loss_and_metrics = model.evaluate(reshape_x(test_x, training_data.IMAGE_DIMENSIONS), test_y, batch_size=32)
-print loss_and_metrics
+  loss_and_metrics = model.evaluate(reshape_x(test_x, training_data.IMAGE_DIMENSIONS), test_y, batch_size=32)
+  print "{}: {}".format(model.metrics_names[1], loss_and_metrics[1])
