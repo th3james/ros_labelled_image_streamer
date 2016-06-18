@@ -7,7 +7,7 @@ import cv2
 
 import rect_training_data as training_data
 
-RECORDS_TO_TRAIN_ON = 1000
+RECORDS_TO_TRAIN_ON = 2300
 batchSize = 50
 
 data = training_data.load_training_sets(RECORDS_TO_TRAIN_ON)

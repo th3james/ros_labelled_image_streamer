@@ -12,7 +12,7 @@ OUTPUT_CLASSES = 2
 def load_data(amount):
   paths = [TRAINING_DATA_PATH + name for name in os.listdir(TRAINING_DATA_PATH)]
   #directories = [path for path in paths if os.path.isdir(path)]
-  directories = [TRAINING_DATA_PATH + dir + '/' for dir in ["0", "4", "7", "14", "11", "25", "present"]]
+  directories = [TRAINING_DATA_PATH + dir + '/' for dir in ["0", "4", "7", "14", "11", "25", "32", "41", "65", "80", "95", "120", "126", "present"]]
   image_names = [path for dir in directories for path in glob.glob(dir + "/*jpg")]
   random.shuffle(image_names)
   
