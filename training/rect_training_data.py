@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 TRAINING_DATA_PATH = "/Users/th3james/src/curricular/ros_labelled_image_streamer/training/training-data/rects/"
-IMAGE_DIMENSIONS = [40, 80, 3]
+IMAGE_DIMENSIONS = [40, 80, 3][::-1]
 IMAGE_POINTS = reduce(lambda x,y: x*y, IMAGE_DIMENSIONS)
 OUTPUT_CLASSES = 2
 
@@ -42,6 +42,8 @@ def load_training_sets(amount):
 
 def load_image(path):
   img = cv2.imread(path)
+  # Flip the axes (Keras convolution uses this: https://github.com/fchollet/keras/issues/315)
+  img = np.swapaxes(np.swapaxes(img, 1, 2), 0, 1)
   return img.flatten().transpose()
 
 ACTION_TO_LABEL = {

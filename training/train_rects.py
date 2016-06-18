@@ -8,27 +8,44 @@ import cv2
 import rect_training_data as training_data
 
 RECORDS_TO_TRAIN_ON = 1000
-batchSize = 40
+batchSize = 50
 
 data = training_data.load_training_sets(RECORDS_TO_TRAIN_ON)
 
 model = Sequential()
 
-model.add(Convolution2D(10, 5, 5, border_mode='same', input_shape=training_data.IMAGE_DIMENSIONS, bias=True))
+model.add(Convolution2D(10, 3, 3, border_mode='same', input_shape=training_data.IMAGE_DIMENSIONS, bias=True))
 model.add(Activation("relu"))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+
+model.add(Convolution2D(5, 3, 3, border_mode='same'))
+model.add(Activation("relu"))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
 model.add(Flatten())
 model.add(Dense(output_dim=1024))
 model.add(Activation("relu"))
 
-model.add(Dropout(0.9))
+model.add(Dense(output_dim=100))
+model.add(Activation("relu"))
+
+model.add(Dense(output_dim=50))
+model.add(Activation("relu"))
+
+model.add(Dense(output_dim=10))
+model.add(Activation("relu"))
+
+#model.add(Dropout(0.9))
+model.add(Dropout(1))
 
 model.add(Dense(output_dim=2, bias=True))
 model.add(Activation("softmax"))
 
-optimiser = Adam(lr=0.0001)
+optimiser = Adam(lr=0.00005)
 model.compile(loss='categorical_crossentropy', optimizer=optimiser, metrics=['accuracy'])
+#model.compile(loss='binary_crossentropy', optimizer=optimiser, metrics=['accuracy'])
+
+print model.summary()
 
 # Do a training
 xs, ys = data['train']
